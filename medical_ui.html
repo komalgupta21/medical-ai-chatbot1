@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical AI Chatbot</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f0f4f8;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .header-icon {
+    width: 42px; height: 42px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .header-text h1 { font-size: 20px; font-weight: 700; }
+  .header-text p { font-size: 12px; opacity: 0.85; }
+  .status-dot {
+    width: 8px; height: 8px;
+    background: #4caf50;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #856404;
+    text-align: center;
+  }
+
+  /* CHAT AREA */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* MESSAGES */
+  .message {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    max-width: 80%;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .message.user { margin-left: auto; flex-direction: row-reverse; }
+
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .bot-avatar  { background: #e3f2fd; }
+  .user-avatar { background: #e8f5e9; }
+
+  .bubble {
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+  .bot-bubble {
+    background: white;
+    color: #333;
+    border-top-left-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  .user-bubble {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white;
+    border-top-right-radius: 4px;
+  }
+
+  /* TYPING INDICATOR */
+  .typing {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    max-width: 80%;
+  }
+  .typing-dots {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 18px;
+    border-top-left-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    background: #1a73e8;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-8px); }
+  }
+
+  /* QUICK QUESTIONS */
+  .quick-questions {
+    padding: 0 20px 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .quick-btn {
+    background: white;
+    border: 1px solid #1a73e8;
+    color: #1a73e8;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .quick-btn:hover {
+    background: #1a73e8;
+    color: white;
+  }
+
+  /* INPUT AREA */
+  .input-area {
+    background: white;
+    padding: 16px 20px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+  }
+  .input-area input {
+    flex: 1;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px;
+    padding: 12px 20px;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .input-area input:focus { border-color: #1a73e8; }
+  .send-btn {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white;
+    border: none;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .send-btn:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(26,115,232,0.4); }
+  .send-btn:disabled { background: #ccc; transform: none; box-shadow: none; cursor: not-allowed; }
+
+  /* API KEY MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal h2 { font-size: 20px; color: #1a73e8; margin-bottom: 8px; }
+  .modal p  { font-size: 13px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+  .modal input {
+    width: 100%;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 16px;
+    transition: border 0.2s;
+  }
+  .modal input:focus { border-color: #1a73e8; }
+  .modal-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white;
+    border: none;
+    padding: 13px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .modal-btn:hover { opacity: 0.9; }
+  .modal-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #1a73e8;
+    text-decoration: none;
+  }
+
+  /* EMERGENCY ALERT */
+  .emergency {
+    background: #ffebee;
+    border: 2px solid #f44336;
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #c62828;
+    font-weight: 600;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<!-- API KEY MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div style="font-size:40px;text-align:center;margin-bottom:12px">🏥</div>
+    <h2>Medical AI Chatbot</h2>
+    <p>Enter your free Groq API key to start chatting. Get one at console.groq.com in under 1 minute.</p>
+    <input type="password" id="apiKeyInput" placeholder="Paste your Groq API key (gsk_...)" />
+    <button class="modal-btn" onclick="startChat()">Start Chatting →</button>
+    <a class="modal-link" href="https://console.groq.com" target="_blank">🔑 Get free API key at console.groq.com</a>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-icon">🏥</div>
+  <div class="header-text">
+    <h1>MediBot AI</h1>
+    <p><span class="status-dot"></span>Online — Powered by Groq + RAG</p>
+  </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  ⚠️ For educational purposes only. Always consult a licensed doctor for medical advice.
+</div>
+
+<!-- CHAT AREA -->
+<div class="chat-area" id="chatArea">
+  <div class="message">
+    <div class="avatar bot-avatar">🤖</div>
+    <div class="bubble bot-bubble">
+      Hello! I'm <strong>MediBot</strong>, your medical AI assistant. 👋<br><br>
+      I can help you with information about symptoms, diseases, and medications.<br><br>
+      <em>Please remember: I'm here for educational purposes. Always consult a real doctor for medical advice.</em>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK QUESTIONS -->
+<div class="quick-questions" id="quickQuestions">
+  <button class="quick-btn" onclick="quickAsk('What are symptoms of diabetes?')">🩺 Diabetes symptoms</button>
+  <button class="quick-btn" onclick="quickAsk('How to treat acne?')">💊 Acne treatment</button>
+  <button class="quick-btn" onclick="quickAsk('What causes fever?')">🌡️ Fever causes</button>
+  <button class="quick-btn" onclick="quickAsk('Migraine remedies')">🧠 Migraine</button>
+  <button class="quick-btn" onclick="quickAsk('High blood pressure treatment')">❤️ Hypertension</button>
+</div>
+
+<!-- INPUT AREA -->
+<div class="input-area">
+  <input type="text" id="userInput" placeholder="Ask a medical question..." 
+         onkeypress="if(event.key==='Enter') sendMessage()" disabled />
+  <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>➤</button>
+</div>
+
+<script>
+  let apiKey = '';
+  let chatHistory = [];
+
+  const MEDICAL_DATA = [
+    "ACNE: Skin condition caused by clogged follicles. Symptoms: pimples, blackheads, whiteheads on face, chest, back. Treatment: benzoyl peroxide, salicylic acid, topical antibiotics. See doctor for severe cases.",
+    "DIABETES TYPE 1: Autoimmune, pancreas makes no insulin. Symptoms: frequent urination, thirst, weight loss, fatigue. Treatment: insulin injections, blood sugar monitoring.",
+    "DIABETES TYPE 2: Body resists insulin. Symptoms: fatigue, thirst, slow healing. Treatment: Metformin, diet, exercise. Risk: obesity, age over 45.",
+    "FEVER: Temperature above 38C. Treatment: paracetamol, ibuprofen, rest, fluids. See doctor if above 39.5C or lasts 3+ days.",
+    "HEADACHE TENSION: Band-like pressure. Treatment: paracetamol, rest, reduce stress.",
+    "HEADACHE MIGRAINE: One-sided pulsating with nausea and light sensitivity. Treatment: triptans, pain relievers, dark quiet room.",
+    "HYPERTENSION: Blood pressure above 130/80. Treatment: lifestyle changes, ACE inhibitors, beta blockers, amlodipine.",
+    "ASTHMA: Wheezing, breathlessness, chest tightness. Treatment: inhalers, avoid triggers like smoke and allergens.",
+    "COMMON COLD: Runny nose, sore throat, cough. Treatment: rest, fluids, OTC medicines. Resolves in 7-10 days.",
+    "CHEST PAIN EMERGENCY: Crushing pain with sweating and nausea - call emergency services immediately.",
+    "PARACETAMOL: 500-1000mg every 4-6 hours. Max 4g per day. Safe for most people.",
+    "IBUPROFEN: 200-400mg every 4-6 hours. Take with food. Avoid in kidney disease.",
+    "SORE THROAT: Gargle warm salt water, drink warm fluids, paracetamol. See doctor if white patches or high fever.",
+    "DIARRHEA: Oral rehydration salts, bland diet, avoid dairy. See doctor if blood in stool or lasts 3+ days.",
+    "SKIN RASH: Could be allergy, eczema, or infection. Eczema: itchy inflamed skin. See doctor for diagnosis.",
+  ];
+
+  function cosineSimilarity(a, b) {
+    let dot = 0, magA = 0, magB = 0;
+    for (let i = 0; i < a.length; i++) {
+      dot  += a[i] * b[i];
+      magA += a[i] * a[i];
+      magB += b[i] * b[i];
+    }
+    return dot / (Math.sqrt(magA) * Math.sqrt(magB) + 1e-8);
+  }
+
+  function simpleEmbed(text) {
+    const words = text.toLowerCase().split(/\W+/);
+    const vocab = ["acne","diabetes","fever","headache","migraine","hypertension","blood","pressure",
+                   "asthma","cold","chest","pain","paracetamol","ibuprofen","throat","rash","diarrhea",
+                   "symptoms","treatment","insulin","breathing","cough","skin","infection","allergy"];
+    return vocab.map(w => words.filter(x => x === w).length);
+  }
+
+  function getContext(question) {
+    const qEmbed = simpleEmbed(question);
+    return MEDICAL_DATA
+      .map((doc, i) => ({ doc, score: cosineSimilarity(qEmbed, simpleEmbed(doc)) }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(x => x.doc)
+      .join('\n');
+  }
+
+  function startChat() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key || !key.startsWith('gsk_')) {
+      alert('Please enter a valid Groq API key starting with gsk_');
+      return;
+    }
+    apiKey = key;
+    document.getElementById('modalOverlay').style.display = 'none';
+    document.getElementById('userInput').disabled = false;
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('userInput').focus();
+  }
+
+  function quickAsk(question) {
+    document.getElementById('userInput').value = question;
+    sendMessage();
+  }
+
+  function addMessage(text, isUser) {
+    const chatArea = document.getElementById('chatArea');
+    const div = document.createElement('div');
+    div.className = `message ${isUser ? 'user' : ''}`;
+
+    const isEmergency = text.toLowerCase().includes('emergency') || text.toLowerCase().includes('call 112');
+
+    div.innerHTML = `
+      <div class="avatar ${isUser ? 'user-avatar' : 'bot-avatar'}">${isUser ? '👤' : '🤖'}</div>
+      <div class="bubble ${isUser ? 'user-bubble' : isEmergency ? 'emergency' : 'bot-bubble'}">${text.replace(/\n/g, '<br>')}</div>
+    `;
+    chatArea.appendChild(div);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+
+  function showTyping() {
+    const chatArea = document.getElementById('chatArea');
+    const div = document.createElement('div');
+    div.className = 'typing';
+    div.id = 'typingIndicator';
+    div.innerHTML = `
+      <div class="avatar bot-avatar">🤖</div>
+      <div class="typing-dots">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    `;
+    chatArea.appendChild(div);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typingIndicator');
+    if (t) t.remove();
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const question = input.value.trim();
+    if (!question) return;
+
+    input.value = '';
+    document.getElementById('sendBtn').disabled = true;
+
+    // Hide quick questions after first message
+    document.getElementById('quickQuestions').style.display = 'none';
+
+    addMessage(question, true);
+    showTyping();
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          apiKey: apiKey,
+          question: question,
+          session_id: 'default'
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Unknown error occurred');
+      }
+
+      removeTyping();
+      
+      if (data.is_emergency) {
+        addMessage(data.answer, false);
+      } else {
+        addMessage(data.answer, false);
+        chatHistory.push({ role: 'user', content: question });
+        chatHistory.push({ role: 'assistant', content: data.answer });
+      }
+
+    } catch (err) {
+      removeTyping();
+      addMessage(`Sorry, I encountered an error: ${err.message}`, false);
+    }
+
+    document.getElementById('sendBtn').disabled = false;
+    input.focus();
+  }
+</script>
+</body>
+</html>

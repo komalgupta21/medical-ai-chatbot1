@@ -1,0 +1,31 @@
+
+DIABETES MELLITUS
+Type 1 Diabetes: An autoimmune condition where the pancreas produces little or no insulin.
+Symptoms: Frequent urination, excessive thirst, unexplained weight loss, fatigue, blurred vision.
+Treatment: Insulin therapy, blood sugar monitoring, healthy diet, regular exercise.
+Diagnosis: Fasting blood sugar >= 126 mg/dL, HbA1c >= 6.5%, Random blood sugar >= 200 mg/dL.
+
+Type 2 Diabetes: The body does not use insulin properly (insulin resistance).
+Symptoms: Similar to Type 1, but often develop slowly. Dark skin patches (acanthosis nigricans).
+Treatment: Lifestyle changes, oral medications (Metformin), insulin if needed.
+Risk Factors: Obesity, age > 45, family history, sedentary lifestyle.
+
+HYPERTENSION (High Blood Pressure)
+Definition: Blood pressure consistently >= 130/80 mmHg.
+Stages: Normal < 120/80, Elevated 120-129/<80, Stage 1: 130-139/80-89, Stage 2: >=140/>=90.
+Symptoms: Usually asymptomatic. Severe: headache, nosebleed, chest pain.
+Treatment: Lifestyle changes, ACE inhibitors, ARBs, diuretics, beta-blockers, calcium channel blockers.
+Complications: Heart attack, stroke, kidney disease, vision loss.
+
+FEVER
+Definition: Body temperature above 38 degrees C (100.4 F).
+Causes: Infections (viral, bacterial), autoimmune disorders, medications, heat exhaustion.
+Management: Rest, fluids, paracetamol (acetaminophen) or ibuprofen.
+When to seek help: Temperature > 39.5 C, fever lasting > 3 days, difficulty breathing, confusion.
+
+ASTHMA
+Definition: Chronic inflammatory disease of the airways causing reversible airflow obstruction.
+Symptoms: Wheezing, shortness of breath, chest tightness, coughing (especially at night).
+Triggers: Allergens, cold air, exercise, smoke, infections, stress.
+Treatment: Inhaled corticosteroids (preventers), bronchodilators (relievers), avoiding triggers.
+Emergency: Blue inhaler not working, severe breathlessness - call emergency services.
